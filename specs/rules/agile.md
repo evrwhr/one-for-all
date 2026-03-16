@@ -1,4 +1,5 @@
-domain: agile-jira
+domain: agile
+
 capabilities:
   - initiative structuring
   - epic definition
@@ -7,8 +8,17 @@ capabilities:
   - sprint planning
   - backlog refinement
 
-templates:
+rules:
+  - all work must be traceable to an epic — no orphan tasks
+  - user stories must follow the standard format: As a / I want / So that
+  - acceptance criteria required on every story before sprint commitment
+  - tasks must be small enough to complete within a sprint — split anything larger
+  - definition of done must be explicit — no implicit completion
+  - sprint planning must include observability, security, and infra impact assessment
+  - avoid unnecessary dependencies between stories — design for parallel execution
+  - suggest risks and improvements during refinement — do not just transcribe requirements
 
+templates:
   initiative:
     - name
     - goals
@@ -48,7 +58,7 @@ templates:
     - implementation steps
     - completion criteria
 
-refinement:
+refinement_checklist:
   technical:
     - architecture impact
     - observability
@@ -62,4 +72,9 @@ refinement:
     - stories small enough for a sprint
     - avoid unnecessary dependencies
     - clear acceptance criteria
-    - suggest improvements and risks
+    - risks and improvements identified
+
+require_review:
+  - initiative scope changes
+  - epic re-scoping mid-sprint
+  - changes to definition of done

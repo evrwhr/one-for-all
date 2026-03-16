@@ -13,6 +13,7 @@
 # Per-project config (copied by this script):
 #   <project>/GEMINI.md   → workspace-specific Antigravity overrides
 #   <project>/AGENTS.md   → cross-tool rules (Cursor, Claude Code, etc.)
+#   <project>/CLAUDE.md   → Claude Code project rules
 
 set -e
 
@@ -22,6 +23,7 @@ TARGET_DIR="${1:-$(pwd)}"
 
 GEMINI_MD="$SOURCE_DIR/GEMINI.md"
 AGENTS_MD="$SOURCE_DIR/AGENTS.md"
+CLAUDE_MD="$SOURCE_DIR/CLAUDE.md"
 
 # Colors
 GREEN='\033[0;32m'
@@ -53,6 +55,7 @@ copy_if_missing() {
 
 copy_if_missing "$GEMINI_MD" "$TARGET_DIR/GEMINI.md"
 copy_if_missing "$AGENTS_MD" "$TARGET_DIR/AGENTS.md"
+copy_if_missing "$CLAUDE_MD" "$TARGET_DIR/CLAUDE.md"
 
 echo ""
 echo -e "${GREEN}Done.${RESET} Open $TARGET_DIR in Antigravity and start building."
