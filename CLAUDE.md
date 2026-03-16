@@ -71,3 +71,6 @@ The engineering cycle workflow (`specs/workflows/engineering-cycle.md`) sequence
 ## Planning Mode
 
 For complex infrastructure tasks, use Planning Mode to break work into task groups, generate architecture artifacts, and produce verifiable deliverables before implementation.
+
+## Git
+- Do not add Co-Authored-By lines to commit messages.
