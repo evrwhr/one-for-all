@@ -8,6 +8,68 @@ This repository contains no application code — only Markdown specifications, a
 
 Antigravity gives AI assistants (Claude Code, Gemini CLI, Cursor, Antigravity) a shared identity, consistent rules, and a structured workflow for platform engineering tasks. Once set up, agents behave as specialized engineers operating in a defined pipeline.
 
+## Usage
+
+### Skills (`/skill-name`)
+
+Skills activate a specialized context in the conversation. Type `/skill-name` and the agent assumes that role with its rules and workflow.
+
+Use skills for **focused, single-domain tasks** when you know which specialist you need:
+
+```
+/infrastructure-engineer
+Create a Terraform module for a GCS bucket with versioning and lifecycle policy.
+```
+
+```
+/sre-engineer
+Define SLOs for the bookings API: p99 latency, availability, and error rate.
+```
+
+```
+/incident-commander
+We have checkout degradation since 14:00. p99 latency went from 200ms to 4s.
+```
+
+### Workflows (`specs/workflows/`)
+
+Workflows define the **sequence of agents** for a type of task:
+
+- `engineering-cycle.md` — full delivery cycle (architect → implement → security → SRE → observability → automation → finops)
+- `agile-planning.md` — planning cycle (initiative → epics → stories → tasks)
+
+Use the orchestrator skill for **end-to-end deliveries** that span multiple domains:
+
+```
+/devops-platform-engineer
+Create a new Go microservice on GKE to process payments. Follow the full engineering cycle.
+```
+
+### Prompts (`specs/prompts/`)
+
+Prompts are reusable templates for specific situations. Unlike skills (which configure the agent), prompts are **ready-made texts** you copy, adapt, and paste directly.
+
+Use prompts when you need more control over the exact input, or when using a tool that does not support skills (Claude.ai web, ChatGPT, etc.).
+
+### Agents (`specs/agents/`)
+
+Agent files define each specialist: role, responsibilities, and stack. They are not invoked directly — they are the source of truth that feeds the skills and `AGENTS.md`.
+
+Edit an agent file when you want to change the scope, responsibilities, or stack of a specialist. The change should be reflected in the corresponding skill.
+
+### When to use each
+
+| Situation | Use |
+|-----------|-----|
+| Focused task in a single domain | `/skill-name` |
+| Full end-to-end delivery | `/devops-platform-engineer` + workflow |
+| Sprint and epic planning | `/agile-scrum-master` |
+| Tool without skill support | `specs/prompts/` |
+| Change an agent's scope or stack | Edit `specs/agents/` + corresponding skill |
+| Define a new multi-agent flow | Create in `specs/workflows/` |
+
+---
+
 ## Repository structure
 
 ```
