@@ -1,72 +1,58 @@
 # Antigravity
 
-A specification and configuration framework for a multi-agent AI system that autonomously designs, builds, and operates cloud platforms.
+A specification and configuration framework for AI agents that autonomously design, build, and operate cloud platforms.
 
-This repository contains no application code — only Markdown specifications, agent definitions, domain rules, skills, and workflows used to guide AI agents across any project.
+No application code — only Markdown specifications, agent definitions, skills, and workflows used to guide AI agents across any project.
 
 ## What it does
 
-Antigravity gives AI assistants (Claude Code, Gemini CLI, Cursor, Antigravity) a shared identity, consistent rules, and a structured workflow for platform engineering tasks. Once set up, agents behave as specialized engineers operating in a defined pipeline.
+Antigravity gives AI assistants (Claude Code, Gemini CLI, Cursor) a shared identity, consistent rules, and a structured workflow for platform engineering tasks.
 
 ## Usage
 
 ### Skills (`/skill-name`)
 
-Skills activate a specialized context in the conversation. Type `/skill-name` and the agent assumes that role with its rules and workflow.
-
-Use skills for **focused, single-domain tasks** when you know which specialist you need:
+Skills activate a specialized agent context in Claude Code. Type `/skill-name` and the agent assumes that role.
 
 ```
-/infrastructure-engineer
-Create a Terraform module for a GCS bucket with versioning and lifecycle policy.
+/platform-architect
+Design the architecture for a new Go payment service on GKE. Include SLOs and golden path.
 ```
 
 ```
-/sre-engineer
-Define SLOs for the bookings API: p99 latency, availability, and error rate.
+/platform-engineer
+Create a Terraform module for a GCS bucket with versioning, lifecycle policy, and cost labels.
 ```
 
 ```
-/incident-commander
-We have checkout degradation since 14:00. p99 latency went from 200ms to 4s.
+/project-manager
+Create a Jira epic to migrate Redis to GCP Memorystore. Break it into stories.
 ```
 
-### Workflows (`specs/workflows/`)
+### When to use each skill
 
-Workflows define the **sequence of agents** for a type of task:
+| Task | Skill |
+|------|-------|
+| Architecture design, tech decisions, golden paths | `/platform-architect` |
+| Terraform, Kubernetes, Helm, CI/CD | `/platform-engineer` |
+| IAM, secrets, OPA/Kyverno policies | `/platform-engineer` |
+| SLO dashboards, alerts, tracing | `/platform-engineer` |
+| Self-healing, runbook automation | `/platform-engineer` |
+| Active incident, postmortem | `/platform-engineer` |
+| Cost analysis, right-sizing | `/platform-engineer` |
+| Jira items (Initiatives, Epics, Stories, Tasks, Bugs) | `/project-manager` |
+| Confluence docs (RFCs, runbooks, postmortems, status updates) | `/project-manager` |
+| Jira/Confluence/Slack automations | `/project-manager` |
+| Full end-to-end delivery | `/platform-architect` then `/platform-engineer` |
 
-- `engineering-cycle.md` — full delivery cycle (architect → implement → security → SRE → observability → automation → finops)
-- `agile-planning.md` — planning cycle (initiative → epics → stories → tasks)
-
-Use the orchestrator skill for **end-to-end deliveries** that span multiple domains:
+### Engineering cycle
 
 ```
-/devops-platform-engineer
-Create a new Go microservice on GKE to process payments. Follow the full engineering cycle.
+Platform Architect  →  Platform Engineer
 ```
 
-### Prompts (`specs/prompts/`)
-
-Prompts are reusable templates for specific situations. Unlike skills (which configure the agent), prompts are **ready-made texts** you copy, adapt, and paste directly.
-
-Use prompts when you need more control over the exact input, or when using a tool that does not support skills (Claude.ai web, ChatGPT, etc.).
-
-### Agents (`specs/agents/`)
-
-Agent files define each specialist: role, responsibilities, and stack. They are not invoked directly — they are the source of truth that feeds the skills and `AGENTS.md`.
-
-Edit an agent file when you want to change the scope, responsibilities, or stack of a specialist. The change should be reflected in the corresponding skill.
-
-### When to use each
-
-| Situation | Use |
-|-----------|-----|
-| Focused task in a single domain | `/skill-name` |
-| Full end-to-end delivery | `/devops-platform-engineer` + workflow |
-| Sprint and epic planning | `/agile-scrum-master` |
-| Tool without skill support | `specs/prompts/` |
-| Change an agent's scope or stack | Edit `specs/agents/` + corresponding skill |
-| Define a new multi-agent flow | Create in `specs/workflows/` |
+Architect produces: architecture, ADRs, SLO specs, security design, handoff document.
+Engineer consumes handoff and produces: IaC, manifests, pipelines, dashboards, runbooks, automation.
 
 ---
 
@@ -74,102 +60,72 @@ Edit an agent file when you want to change the scope, responsibilities, or stack
 
 ```
 one-for-all/
-├── AGENTS.md                        # Cross-tool agent rules (Cursor, Claude Code, Gemini)
-├── CLAUDE.md                        # Claude Code project rules
-├── GEMINI.md                        # Gemini CLI project rules
-├── .github/
-│   └── pull_request_template.md     # PR template with domain-aware checklists
+├── CLAUDE.md                                    # Claude Code global config (inline rules)
+├── AGENTS.md                                    # Cross-tool rules (Cursor, Gemini, etc.)
+├── GEMINI.md                                    # Gemini CLI config
+├── antigravity/                                 # Agent definitions and workflows (repo only)
+│   ├── agents/
+│   │   ├── platform-architect.md
+│   │   ├── platform-engineer.md
+│   │   └── project-manager.md
+│   └── workflows/
+│       └── engineering-cycle.md
+├── claude/                                      # Claude Code specific
+│   ├── conventions.md                           # Output style, file conventions (source of truth)
+│   ├── permissions.md                           # Execution policy (source of truth)
+│   └── skills/                                  # Skills → installed to ~/.claude/skills/
+│       ├── platform-architect/SKILL.md
+│       ├── platform-engineer/SKILL.md
+│       └── project-manager/SKILL.md
 ├── scripts/
-│   ├── init-project.sh              # Bootstrap Antigravity in any target project
-│   └── setup-antigravity.sh         # Install skills and global configs locally
-├── skills/                          # Antigravity skills (invoked with /skill-name)
-│   ├── devops-platform-engineer/    # Orchestrator: full engineering cycle
-│   ├── platform-architect/          # Architecture design and technology decisions
-│   ├── infrastructure-engineer/     # Terraform, Kubernetes, Helm, CI/CD
-│   ├── security-engineer/           # IAM, secrets, OPA/Kyverno, Trivy
-│   ├── sre-engineer/                # SLOs, error budgets, postmortems
-│   ├── observability-engineer/      # Prometheus, Grafana, OpenTelemetry, alerts
-│   ├── automation-engineer/         # Self-healing, runbook automation, infra bots
-│   ├── finops-engineer/             # Cost analysis, right-sizing, budget forecasting
-│   ├── incident-commander/          # Incident response, triage, postmortems
-│   └── agile-scrum-master/          # Jira, epics, sprint planning
-└── specs/
-    ├── agents/                      # Agent definitions (role, responsibilities, stack)
-    ├── rules/                       # Domain-specific rules and checklists
-    ├── prompts/                     # Reusable prompts per role
-    ├── workflows/                   # Multi-agent workflow definitions
-    └── system.md                    # System-wide configuration
+│   ├── install-global.sh                        # Install globally (~/.claude/ and ~/.gemini/)
+│   └── init-project.sh                          # Bootstrap Antigravity in a target project
+└── .github/
+    └── pull_request_template.md
 ```
 
-## Skills
+### What lives where
 
-Skills are invoked with `/skill-name` in the Antigravity app. Use specialist skills for targeted tasks; use the orchestrator for end-to-end workflows.
+| Location | What | Read by |
+|----------|------|---------|
+| `~/.claude/CLAUDE.md` | Global rules, conventions, stack, execution policy | Claude Code (automatic) |
+| `~/.claude/skills/<name>/SKILL.md` | Skills invocable with `/name` | Claude Code (automatic) |
+| `~/.gemini/GEMINI.md` | Gemini CLI config | Gemini CLI (automatic) |
+| `<project>/AGENTS.md` | Cross-tool agent rules | Cursor, Claude Code, Gemini |
+| `<project>/GEMINI.md` | Project-level Gemini config | Gemini CLI |
+| `antigravity/` | Agent specs and workflows | Humans (reference only) |
+| `claude/conventions.md`, `claude/permissions.md` | Source of truth for rules merged into CLAUDE.md | Humans (reference only) |
 
-| Skill | When to use |
-|-------|-------------|
-| `/devops-platform-engineer` | Full engineering cycle (orchestrator) |
-| `/platform-architect` | Architecture design, tech decisions, golden paths |
-| `/infrastructure-engineer` | Terraform, Kubernetes manifests, Helm, CI/CD pipelines |
-| `/security-engineer` | IAM review, secrets management, OPA/Kyverno policies |
-| `/sre-engineer` | SLOs, error budgets, reliability review, postmortems |
-| `/observability-engineer` | Metrics, dashboards, tracing, alerting |
-| `/automation-engineer` | Self-healing systems, runbook automation, infra bots |
-| `/finops-engineer` | GCP cost analysis, right-sizing, autoscaling optimization |
-| `/incident-commander` | Active incidents, severity triage, postmortems |
-| `/agile-scrum-master` | Jira structuring, epics, user stories, sprint planning |
-
-## Engineering cycle
-
-```
-platform-architect → infrastructure-engineer → security-engineer → sre-engineer →
-observability-engineer → automation-engineer → finops-engineer → docs → continuous improvement
-```
+---
 
 ## Setup
 
-### Local environment (Antigravity skills + global configs)
+### Install globally
 
 ```bash
 git clone git@github.com:evrwhr/one-for-all.git
-./one-for-all/scripts/setup-antigravity.sh
+./one-for-all/scripts/install-global.sh
 ```
 
-Installs all skills into `~/.gemini/antigravity/skills/` and copies `GEMINI.md` and `CLAUDE.md` to their global paths.
+Installs:
+- `CLAUDE.md` → `~/.claude/CLAUDE.md`
+- `claude/skills/*` → `~/.claude/skills/`
+- `GEMINI.md` → `~/.gemini/GEMINI.md`
 
 ### Bootstrap a target project
-
-Copy Antigravity config into any project repository:
 
 ```bash
 ./scripts/init-project.sh [target-directory]
 ```
 
-Copies `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` into the target directory, making agent rules available to all supported IDEs.
+Copies `AGENTS.md` and `GEMINI.md` into the target directory.
 
 ### Global config paths
 
-| Tool | Global config path |
-|------|--------------------|
-| Claude Code | `~/.claude/CLAUDE.md` |
-| Gemini CLI | `~/.gemini/GEMINI.md` |
-
-## Domain rules
-
-Rules in `specs/rules/` define how each agent must behave within its domain:
-
-| Rule file | Domain |
-|-----------|--------|
-| `operational.md` | Cross-cutting rules (applies to all agents) |
-| `infrastructure.md` | Cloud architecture, IaC, GCP provisioning |
-| `kubernetes.md` | Cluster lifecycle, workloads, Helm, networking |
-| `cicd.md` | GitHub Actions, ArgoCD, GitOps, pipeline standards |
-| `security.md` | IAM, secrets, policy as code, supply chain |
-| `observability.md` | Metrics, logs, tracing, alerting |
-| `reliability.md` | SLOs, error budgets, incident response, resilience |
-| `automation.md` | Self-healing, event-driven automation, runbooks |
-| `cost.md` | Cost allocation, right-sizing, autoscaling, waste |
-| `platform.md` | Backstage, golden paths, developer experience |
-| `agile.md` | Jira, sprint planning, story refinement |
+| Tool | Global config | Skills |
+|------|--------------|--------|
+| Claude Code | `~/.claude/CLAUDE.md` | `~/.claude/skills/` |
+| Gemini CLI | `~/.gemini/GEMINI.md` | — |
 
 ## Technology stack
 

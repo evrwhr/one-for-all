@@ -5,15 +5,14 @@
 # Example: init-project.sh ~/Projects/my-infra
 #          init-project.sh  (uses current directory)
 #
-# Global config (already installed, applies to all projects):
-#   ~/.gemini/GEMINI.md                          → global rules
-#   ~/.gemini/antigravity/skills/                → global skills
-#   ~/.gemini/antigravity/global_workflows/      → global workflows
+# Global config (installed by scripts/install-global.sh):
+#   ~/.claude/CLAUDE.md              → Claude Code global config
+#   ~/.claude/skills/                → Claude Code skills
+#   ~/.gemini/GEMINI.md              → Gemini CLI global config
 #
 # Per-project config (copied by this script):
-#   <project>/GEMINI.md   → workspace-specific Antigravity overrides
-#   <project>/AGENTS.md   → cross-tool rules (Cursor, Claude Code, etc.)
-#   <project>/CLAUDE.md   → Claude Code project rules
+#   <project>/AGENTS.md   → cross-tool rules (Cursor, Claude Code, Gemini)
+#   <project>/GEMINI.md   → workspace-specific Gemini overrides
 
 set -e
 
@@ -23,7 +22,6 @@ TARGET_DIR="${1:-$(pwd)}"
 
 GEMINI_MD="$SOURCE_DIR/GEMINI.md"
 AGENTS_MD="$SOURCE_DIR/AGENTS.md"
-CLAUDE_MD="$SOURCE_DIR/CLAUDE.md"
 
 # Colors
 GREEN='\033[0;32m'
@@ -55,7 +53,6 @@ copy_if_missing() {
 
 copy_if_missing "$GEMINI_MD" "$TARGET_DIR/GEMINI.md"
 copy_if_missing "$AGENTS_MD" "$TARGET_DIR/AGENTS.md"
-copy_if_missing "$CLAUDE_MD" "$TARGET_DIR/CLAUDE.md"
 
 echo ""
 echo -e "${GREEN}Done.${RESET} Open $TARGET_DIR in Antigravity and start building."

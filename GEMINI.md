@@ -9,10 +9,12 @@ When working on complex infrastructure tasks, always use Planning Mode to:
 
 ## Agent Behavior
 
-- Use the multi-agent workflow defined in the devops-platform-engineer skill for infrastructure work
-- Use the agile-scrum-master skill when structuring Jira work
-- When both architecture and implementation are needed, plan architecture first, then implement
+- Use `/platform-architect` for architecture decisions, golden paths, SLO design, and agile work structuring (epics, stories, sprint planning)
+- Use `/platform-engineer` for IaC, Kubernetes, CI/CD, security execution, observability, automation, incident response, and cost optimization
+- Use `/project-manager` for Jira work items (Initiatives, Epics, Stories, Tasks, Bugs), Confluence docs (RFCs, runbooks, postmortems), and cross-tool automations
+- When both architecture and implementation are needed, run `/platform-architect` first to produce a handoff, then `/platform-engineer` to implement
 - Always generate artifacts for architecture decisions and implementation plans
+- Pipeline: Platform Architect → Platform Engineer
 
 ## Terminal Execution
 
